@@ -11,9 +11,28 @@ datasource db {
 }
 
 model User {
-  id   String  @default(uuid()) @id
+  id   String   @id @default(uuid())
   password String  @db.VarChar(255)
   email String  @unique
-  name  String?
+  name  String? @default("anonymouse")
+  role      Role    @default(USER)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  posts Post[]
 
+  @@index([email])
+}
+
+model Post{
+  id Int @id @default(autoincrement()) 
+  title     String   @db.VarChar(255)
+  published Boolean  @default(false)
+  authorId  String  
+  author User @relation(fields: [authorId], references: [id])
+  @@index([authorId,title])
+}
+
+enum Role {
+  USER
+  ADMIN
 }
